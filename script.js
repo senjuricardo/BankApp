@@ -80,6 +80,17 @@ movements.forEach(function(mov, i){
 }
 
 dipslayMovements(account1.movements)
+
+const createUserNames = function(accs){
+    accs.forEach(function(acc){
+        acc.userName = acc.owner
+        .toLowerCase().split(' ').map(name => name[0]).join('');
+         
+    })
+    
+}
+createUserNames(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
