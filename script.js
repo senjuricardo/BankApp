@@ -79,17 +79,62 @@ movements.forEach(function(mov, i){
 })
 }
 
-dipslayMovements(account1.movements)
+
+
+const calcDisplayBalance = function(movements){
+  const balance = movements.reduce((acc, mov)=> acc + mov, 0 );
+  labelBalance.textContent = `${balance} EUR`
+}
+
+
+const calcDisplaySummary = function(acc){
+const incomes = acc.movements.filter(mov => mov > 0).reduce((acc, curr) => acc+curr, 0)
+labelSumIn.textContent = incomes 
+
+const out  = acc.movements.filter(mov => mov < 0).reduce((acc, curr) => Math.abs(acc-curr) , 0)
+labelSumOut.textContent = out 
+
+const interest = acc.movements.filter(mov => mov > 0).map(deposit => deposit * acc.interestRate/100)
+.filter(int => int >= 1)
+.reduce((acc, int) => acc+int, 0)
+labelSumInterest.textContent = interest
+}
+
+
 
 const createUserNames = function(accs){
     accs.forEach(function(acc){
         acc.userName = acc.owner
         .toLowerCase().split(' ').map(name => name[0]).join('');
          
-    })
-    
+    })  
 }
 createUserNames(accounts);
+
+//EVENT HANDLER
+let currentAccount;
+
+btnLogin.addEventListener('click', function(e){
+  e.preventDefault()
+  
+  currentAccount= accounts.find( acc => acc.userName === 
+    inputLoginUsername.value);
+    console.log(currentAccount)
+
+    if(currentAccount?.pin === Number(inputLoginPin.value)){
+
+      labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
+      
+      containerApp.style.opacity = 100;
+      inputLoginUsername.value = inputLoginPin.value =  ''
+      inputLoginPin.blur()
+
+      dipslayMovements(currentAccount.movements);
+      calcDisplayBalance(currentAccount.movements);
+      calcDisplaySummary(currentAccount);
+    }
+    
+})
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -101,6 +146,13 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const deposits = movements.filter((mov) => mov >0 )
+const withdrawals = movements.filter((mov) => mov < 0 )
+console.log(movements)
 /////////////////////////////////////////////////
+
+const balance = movements.reduce(function(acc, cur){
+return acc + cur
+}, 0)
